@@ -13,7 +13,7 @@ namespace Exchange
         {
             // Build configuration
             IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory) // Ensure correct path
+                .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
