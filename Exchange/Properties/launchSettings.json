@@ -2,7 +2,7 @@
   "profiles": {
     "Exchange": {
       "commandName": "Project",
-      "commandLineArgs": "EUR/USD 1"
+      "commandLineArgs": "eur/USD 1"
     }
   }
 }
