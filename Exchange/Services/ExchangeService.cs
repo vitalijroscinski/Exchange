@@ -9,15 +9,15 @@ namespace Exchange.Services
 {
     public class ExchangeService
     {
-        private NumberFormatInfo _numberFormatInfo = new();
-        private Dictionary<string, decimal> _rates = new(StringComparer.OrdinalIgnoreCase);
         private readonly ExchangeSettings _settings;
+        private readonly RateService _rateService;
+        private readonly GlobalSettingsService _globalSettingsService;
 
-        public ExchangeService(ExchangeSettings settings)
+        public ExchangeService(ExchangeSettings settings, RateService rateService, GlobalSettingsService globalSettingsService)
         {
-            _numberFormatInfo.NumberDecimalSeparator = ".";
             _settings = settings;
-            GetRates();
+            _rateService = rateService;
+            _globalSettingsService = globalSettingsService;
         }
 
         public ExchangeContract? ParseContract(string[] args)
@@ -32,7 +32,7 @@ namespace Exchange.Services
             var currencies = args[0].Split("/");
 
             decimal amount;
-            if (!Decimal.TryParse(args[1].Replace(",", "."), _numberFormatInfo, out amount))
+            if (!Decimal.TryParse(args[1].Replace(",", "."), _globalSettingsService.NumberFormatInfo, out amount))
                 return null;
 
 
@@ -46,44 +46,18 @@ namespace Exchange.Services
             return contract;
         }
 
-        private void GetRates()
-        {
-            var lines = File.ReadAllLines(_settings.RateFileName).ToList();
-            lines.Add($"{_settings.BaseCurrency};{_settings.BaseCurrency};100");
-
-            for (int i = 1; i < lines.Count; i++)
-            {
-                if (string.IsNullOrEmpty(lines[i]))
-                    continue;
-
-                var items = lines[i].Split(";");
-                var currency = items[1];
-                var rate = Decimal.Parse(items[2].Replace(",", "."), _numberFormatInfo) / 100m;
-
-                if (_rates.ContainsKey(currency))
-                {
-                    if (_rates[currency] != rate)
-                        throw new Exception($"Currency '{currency}' has multiple rates in the file '{_settings.RateFileName}'");
-                    else
-                        continue;
-                }
-
-                _rates.Add(currency, rate);
-            }
-        }
-
         public decimal CalculateExchangeAmount(ExchangeContract contract)
         {
-            if (!_rates.ContainsKey(contract.CurrencyFrom))
+            if (!_rateService.Rates.ContainsKey(contract.CurrencyFrom))
                 throw new ArgumentException($"Currency {contract.CurrencyFrom} rate is unknown");
 
-            if (!_rates.ContainsKey(contract.CurrencyTo))
+            if (!_rateService.Rates.ContainsKey(contract.CurrencyTo))
                 throw new ArgumentException($"Currency {contract.CurrencyTo} rate is unknown");
 
             if (contract.CurrencyFrom == contract.CurrencyTo)
                 return decimal.Round(contract.Amount, _settings.RoundResult, MidpointRounding.ToZero);
 
-            var amount = _rates[contract.CurrencyFrom] / _rates[contract.CurrencyTo] * contract.Amount;
+            var amount = _rateService.Rates[contract.CurrencyFrom] / _rateService.Rates[contract.CurrencyTo] * contract.Amount;
             return decimal.Round(amount, _settings.RoundResult, MidpointRounding.ToZero);
         }
     }

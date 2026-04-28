@@ -1,6 +1,7 @@
 ﻿using Exchange.Models;
 using Exchange.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -8,23 +9,33 @@ namespace Exchange
 {
     internal class Program
     {
-        private const string _exchangeRatesFileName = "DkkExchangeRates.csv";
-        private static NumberFormatInfo _numberFormatInfo = new();
         static async Task Main(string[] args)
         {
+            // Build configuration
+            IConfiguration config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory) // Ensure correct path
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var settings = config.GetSection("Rates").Get<ExchangeSettings>();
+
+            //Dependency injection
+            var serviceProvider = new ServiceCollection()
+                .AddScoped<ExchangeService>()
+                .AddScoped<RateService>()
+                .AddSingleton<GlobalSettingsService>()
+                .AddSingleton(settings)
+                .BuildServiceProvider();
+
             try
             {
-                // Build configuration
-                IConfiguration config = new ConfigurationBuilder()
-                    .SetBasePath(AppContext.BaseDirectory) // Ensure correct path
-                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .Build();
 
-                var settings = config.GetSection("Rates").Get<ExchangeSettings>();
-                if (settings == null)
-                    throw new Exception("Problem with reading configurtion file");
+                var service = serviceProvider.GetService<ExchangeService>();
+                var rateService = serviceProvider.GetService<RateService>();
+                await rateService.FillRatesFromFileAsync(settings.RateFileName);
 
-                ExchangeService service = new(settings);
+
+                //ExchangeService service = new(settings);
                 var exchangeContract = service.ParseContract(args);
                 if (exchangeContract == null)
                 {
