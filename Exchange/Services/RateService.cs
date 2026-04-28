@@ -45,6 +45,9 @@ namespace Exchange.Services
         {
             foreach (var rate in rates)
                 _rates.Add(rate.Key, rate.Value);
+
+            if(!_rates.ContainsKey(_settings.BaseCurrency))
+                _rates.Add(_settings.BaseCurrency,100);
         }
     }
 }
