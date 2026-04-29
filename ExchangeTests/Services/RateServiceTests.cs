@@ -39,6 +39,47 @@ namespace ExchangeTests.Services
             Assert.IsTrue(_rateService.Rates.ContainsKey("eur"));
         }
 
+        [Test]
+        public void FillCustomRates_AddEmptyCurrencyName_ThrowException()
+        {
+            Dictionary<string, decimal> rates = new();
+            rates.Add("", 100);
+            Assert.Throws<Exception>(() => _rateService.FillCustomRates(rates));
+        }
+
+        [Test]
+        public void FillCustomRates_AddZeroRate_ThrowException()
+        {
+            Dictionary<string, decimal> rates = new();
+            rates.Add("EUR", 0);
+            Assert.Throws<Exception>(() => _rateService.FillCustomRates(rates));
+        }
+
+        [Test]
+        public void FillCustomRates_AddNegativeRate_ThrowException()
+        {
+            Dictionary<string, decimal> rates = new();
+            rates.Add("EUR", -1);
+            Assert.Throws<Exception>(() => _rateService.FillCustomRates(rates));
+        }
+
+        [Test]
+        public void FillCustomRates_AddCurrencyNameWithTrailingSpace_ThrowException()
+        {
+            Dictionary<string, decimal> rates = new();
+            rates.Add(" EUR", 100);
+            Assert.Throws<Exception>(() => _rateService.FillCustomRates(rates));
+        }
+
+        [Test]
+        public void FillCustomRates_AddCurrencyNameWithEndingSpace_ThrowException()
+        {
+            Dictionary<string, decimal> rates = new();
+            rates.Add("EUR ", 100);
+            Assert.Throws<Exception>(() => _rateService.FillCustomRates(rates));
+        }
+
+
         [TearDown]
         public void TearsDown()
         {

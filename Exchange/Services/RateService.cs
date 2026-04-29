@@ -15,6 +15,18 @@ namespace Exchange.Services
             _globalSettingsService = globalSettingsService;
         }
 
+        private void ValidateRate(string currency, decimal rate)
+        {
+            if (string.IsNullOrEmpty(currency))
+                throw new Exception("Currency name is empty");
+
+            if(currency.Trim()!=currency)
+                throw new Exception("Currency name contains leading or trailing spaces");
+
+            if (rate <= 0)
+                throw new Exception("Rate must be positive");
+        }
+
         public async Task FillRatesFromFileAsync(string fileName)
         {
             var lines = (await File.ReadAllLinesAsync(_settings.RateFileName)).ToList();
@@ -25,9 +37,11 @@ namespace Exchange.Services
                 if (string.IsNullOrEmpty(lines[i]))
                     continue;
 
-                var items = lines[i].Split(";");
+                var items = lines[i].Split(";", StringSplitOptions.TrimEntries);
                 var currency = items[1];
                 var rate = Decimal.Parse(items[2].Replace(",", "."), _globalSettingsService.NumberFormatInfo) / 100m;
+
+                ValidateRate(currency, rate);
 
                 if (_rates.ContainsKey(currency))
                 {
@@ -44,10 +58,13 @@ namespace Exchange.Services
         public void FillCustomRates(Dictionary<string, decimal> rates)
         {
             foreach (var rate in rates)
+            {
+                ValidateRate(rate.Key, rate.Value);
                 _rates.Add(rate.Key, rate.Value);
+            }
 
-            if(!_rates.ContainsKey(_settings.BaseCurrency))
-                _rates.Add(_settings.BaseCurrency,100);
+            if (!_rates.ContainsKey(_settings.BaseCurrency))
+                _rates.Add(_settings.BaseCurrency, 100);
         }
     }
 }
