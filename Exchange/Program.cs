@@ -21,6 +21,7 @@ namespace Exchange
 
             //Dependency injection
             var serviceProvider = new ServiceCollection()
+                .AddSingleton<MainService>()
                 .AddScoped<ExchangeService>()
                 .AddScoped<RateService>()
                 .AddSingleton<GlobalSettingsService>()
@@ -29,27 +30,12 @@ namespace Exchange
 
             try
             {
-
-                var service = serviceProvider.GetService<ExchangeService>();
-                var rateService = serviceProvider.GetService<RateService>();
-                await rateService.FillRatesFromFileAsync(settings.RateFileName);
-
-
-                //ExchangeService service = new(settings);
-                var exchangeContract = service.ParseContract(args);
-                if (exchangeContract == null)
-                {
-                    Console.WriteLine("Usage: Exchange <currency pair> <amount to exchange>");
-                    Console.WriteLine("Example: Exchange EUR/DKK 1");
-                    return;
-                }
-
-                var amount = service.CalculateExchangeAmount(exchangeContract);
-                Console.WriteLine(amount);
+                var mainService = serviceProvider.GetService<MainService>();
+                await mainService.Run(args);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Could not calculate. Error message:{ex.Message}");
+                Console.WriteLine($"Could not run application. Error message:{ex.Message}");
             }
         }
     }
