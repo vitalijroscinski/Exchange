@@ -1,4 +1,5 @@
-﻿using Exchange.Models;
+﻿using Exchange.Extensions;
+using Exchange.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,13 +10,11 @@ namespace Exchange.Services
 {
     public class ExchangeService
     {
-        private readonly ExchangeSettings _settings;
         private readonly RateService _rateService;
         private readonly GlobalSettingsService _globalSettingsService;
 
-        public ExchangeService(ExchangeSettings settings, RateService rateService, GlobalSettingsService globalSettingsService)
+        public ExchangeService(RateService rateService, GlobalSettingsService globalSettingsService)
         {
-            _settings = settings;
             _rateService = rateService;
             _globalSettingsService = globalSettingsService;
         }
@@ -55,10 +54,10 @@ namespace Exchange.Services
                 throw new ArgumentException($"Currency {contract.CurrencyTo} rate is unknown");
 
             if (contract.CurrencyFrom == contract.CurrencyTo)
-                return decimal.Round(contract.Amount, _settings.RoundResult, MidpointRounding.ToZero);
+                return contract.Amount.DefaultRound();
 
             var amount = _rateService.Rates[contract.CurrencyFrom] / _rateService.Rates[contract.CurrencyTo] * contract.Amount;
-            return decimal.Round(amount, _settings.RoundResult, MidpointRounding.ToZero);
+            return amount.DefaultRound();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Exchange.Models;
+﻿using Exchange.Extensions;
+using Exchange.Models;
 
 namespace Exchange.Services
 {
@@ -28,6 +29,8 @@ namespace Exchange.Services
                     Console.WriteLine("Example: Exchange EUR/DKK 1");
                     return;
                 }
+
+                ExchangeExtensions.ExchangeSettings = _exchangeSettings;
 
                 var amount = _exchangeService.CalculateExchangeAmount(exchangeContract);
                 Console.WriteLine(amount);
