@@ -1,5 +1,7 @@
 ﻿using Exchange.Models;
 using Exchange.Services;
+using Exchange.Services.ExchangeServices.FileSource;
+using Exchange.Services.ExchangeServices.NetworkSource;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
@@ -17,15 +19,16 @@ namespace Exchange
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            var settings = config.GetSection("Rates").Get<ExchangeSettings>();
+            var appSettings = config.GetSection("Rates").Get<AppSettings>();
 
             //Dependency injection
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<MainService>()
-                .AddScoped<ExchangeService>()
+                .AddScoped<ExchangeServiceFile>()
+                .AddScoped<ExchangeServiceNetwork>()
                 .AddScoped<RateService>()
-                .AddSingleton<GlobalSettingsService>()
-                .AddSingleton(settings)
+                .AddSingleton<GlobalSettings>()
+                .AddSingleton(appSettings)
                 .BuildServiceProvider();
 
             try

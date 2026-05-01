@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Exchange.Services
 {
-    public class GlobalSettingsService
+    public class GlobalSettings
     {
         public NumberFormatInfo NumberFormatInfo = new();
 
-        public GlobalSettingsService()
+        public GlobalSettings()
         {
             NumberFormatInfo.NumberDecimalSeparator = ".";
         }

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Exchange.Services.ExchangeServices.FileSource;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,35 +9,37 @@ namespace ExchangeTests.Services
     [TestFixture]
     public class RateServiceTests
     {
-        private Exchange.Services.RateService _rateService;
+        private RateService _rateService;
 
         [SetUp]
         public void SetUp()
         {
-            var exchangeSettings = new Exchange.Models.ExchangeSettings() {BaseCurrency="DKK", RoundResult=2 };
+            var exchangeSettings = new Exchange.Models.AppSettings() {BaseCurrency="DKK"};
             _rateService = new(exchangeSettings, null);
         }
 
         [Test]
-        public void FillCustomRates_AddCustomRate_RateExists()
+        public async Task FillCustomRates_AddCustomRate_RateExists()
         {
 
             Dictionary<string, decimal> rates = new();
             rates.Add("EUR", 100);
             _rateService.FillCustomRates(rates);
+            var serviceRates = await _rateService.GetRatesAsync();
 
-            Assert.IsTrue(_rateService.Rates.ContainsKey("EUR"));
-            Assert.AreEqual(_rateService.Rates["EUR"], 100);
+            Assert.IsTrue(serviceRates.ContainsKey("EUR"));
+            Assert.AreEqual(serviceRates["EUR"], 100);
         }
 
         [Test]
-        public void FillCustomRates_AddCustomRate_RateIsCaseInsensetive()
+        public async Task FillCustomRates_AddCustomRate_RateIsCaseInsensetive()
         {
             Dictionary<string, decimal> rates = new();
             rates.Add("EUR", 100);
             _rateService.FillCustomRates(rates);
+            var serviceRates = await _rateService.GetRatesAsync();
 
-            Assert.IsTrue(_rateService.Rates.ContainsKey("eur"));
+            Assert.IsTrue(serviceRates.ContainsKey("eur"));
         }
 
         [Test]
@@ -79,11 +82,5 @@ namespace ExchangeTests.Services
             Assert.Throws<Exception>(() => _rateService.FillCustomRates(rates));
         }
 
-
-        [TearDown]
-        public void TearsDown()
-        {
-            _rateService = null;
-        }
     }
 }
