@@ -81,6 +81,5 @@ namespace ExchangeTests.Services
             rates.Add("EUR ", 100);
             Assert.Throws<Exception>(() => _rateService.FillCustomRates(rates));
         }
-
     }
 }

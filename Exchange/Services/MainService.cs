@@ -41,27 +41,34 @@ namespace Exchange.Services
                 Console.WriteLine("Select currences source");
                 Console.WriteLine($"1. File {_appSettings.RateFileName}");
                 Console.WriteLine($"2. Url {_appSettings.RateWebApiUrl}");
-                var key = Console.ReadKey();
+                Console.WriteLine($"3. All");
+                var key = Console.ReadKey(true);
 
-                IExchangeService exchangeService = null;
+                List<IExchangeService> exchangeServices = new();
                 switch (key.KeyChar)
                 {
                     case '1':
-                        exchangeService = _exchangeServiceFile;
+                        exchangeServices.Add(_exchangeServiceFile);
                         break;
 
                     case '2':
-                        exchangeService = _exchangeServiceNetwork;
+                        exchangeServices.Add(_exchangeServiceNetwork);
                         break;
 
+                    case '3':
+                        exchangeServices.Add(_exchangeServiceFile);
+                        exchangeServices.Add(_exchangeServiceNetwork);
+                        break;
                     default:
                         throw new ArgumentException("Selected value is incorrect");
 
                 }
 
-                var amount = await exchangeService.CalculateExchangeAmount(exchangeContract);
-                Console.WriteLine();
-                Console.WriteLine($"Amount: {Math.Round(amount, _appSettings.RoundDigits, MidpointRounding.ToZero)}");
+                foreach(var service in exchangeServices)
+                {
+                    var amount = await service.CalculateExchangeAmount(exchangeContract);
+                    Console.WriteLine($"Amount: {Math.Round(amount, _appSettings.RoundDigits, MidpointRounding.ToZero)}");
+                }
             }
             catch (Exception ex)
             {
