@@ -40,6 +40,8 @@ namespace Exchange.Services.ExchangeServices.FileSource
             _rates = new(StringComparer.OrdinalIgnoreCase);
 
             var lines = (await File.ReadAllLinesAsync(_appSettings.RateFileName)).ToList();
+            
+            //add base currency rate
             lines.Add($"{_appSettings.BaseCurrency};{_appSettings.BaseCurrency};100");
 
             for (int i = 1; i < lines.Count; i++)

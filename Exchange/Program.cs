@@ -25,8 +25,8 @@ namespace Exchange
             //Dependency injection
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<MainService>()
-                .AddScoped<IExchangeService, ExchangeServiceFile>()
-                .AddScoped<IExchangeService, ExchangeServiceNetwork>()
+                .AddScoped<IExchangeService, NetworkSourceExchangeService>()
+                .AddScoped<IExchangeService, NetworkSourceExchangeService>()
                 .AddScoped<RateService>()
                 .AddSingleton<GlobalSettings>()
                 .AddSingleton(appSettings)

@@ -5,12 +5,12 @@ using System.Text.Json;
 
 namespace Exchange.Services.ExchangeServices.NetworkSource
 {
-    public class ExchangeServiceNetwork : IExchangeService
+    public class NetworkSourceExchangeService : IExchangeService
     {
         private readonly AppSettings _appSettings;
         private readonly GlobalSettings _globalSettings;
 
-        public ExchangeServiceNetwork(AppSettings exchangeSettings, GlobalSettings globalSettings)
+        public NetworkSourceExchangeService(AppSettings exchangeSettings, GlobalSettings globalSettings)
         {
             _appSettings = exchangeSettings;
             _globalSettings = globalSettings;

@@ -4,11 +4,11 @@ using System.Text.RegularExpressions;
 
 namespace Exchange.Services.ExchangeServices.FileSource
 {
-    public class ExchangeServiceFile : IExchangeService
+    public class FileSourceExchangeService : IExchangeService
     {
         private readonly RateService _rateService;
 
-        public ExchangeServiceFile(RateService rateService)
+        public FileSourceExchangeService(RateService rateService)
         {
             _rateService = rateService;
         }
@@ -18,6 +18,7 @@ namespace Exchange.Services.ExchangeServices.FileSource
         public async Task<decimal> CalculateExchangeAmount(ExchangeContract contract)
         {
             var rates = await _rateService.GetRatesAsync();
+
             if (!rates.ContainsKey(contract.CurrencyFrom))
                 throw new ArgumentException($"Currency {contract.CurrencyFrom} rate is unknown");
 

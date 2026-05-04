@@ -15,7 +15,7 @@ namespace ExchangeTests.Services
         private AppSettings _appSettings;
         private GlobalSettings _globalSettingsService;
         private RateService _rateService;
-        private ExchangeServiceFile _exchangeService;
+        private FileSourceExchangeService _exchangeService;
         private MainService _mainService;
 
         [SetUp]
