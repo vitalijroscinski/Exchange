@@ -25,7 +25,7 @@ namespace ExchangeTests.Services
             _globalSettingsService = new();
             _rateService = new(_appSettings, _globalSettingsService);
             _exchangeService = new(_rateService);
-            _mainService = new(null, null, null, null, _globalSettingsService);
+            _mainService = new(null, null, null, _globalSettingsService);
         }
 
         [Test]
