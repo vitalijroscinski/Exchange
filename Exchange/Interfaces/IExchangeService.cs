@@ -7,6 +7,7 @@ namespace Exchange.Interfaces
 {
     public interface IExchangeService
     {
-        public Task<decimal> CalculateExchangeAmount(ExchangeContract contract);
+        string ExchangeRatesSource { get; }
+        Task<decimal> CalculateExchangeAmount(ExchangeContract contract);
     }
 }

@@ -16,6 +16,8 @@ namespace Exchange.Services.ExchangeServices.NetworkSource
             _globalSettings = globalSettings;
         }
 
+        public string ExchangeRatesSource => "Network";
+
         public async Task<decimal> CalculateExchangeAmount(ExchangeContract contract)
         {
             Func<string, decimal> ToDecimal = value => Decimal.Parse(value, _globalSettings.NumberFormatInfo);

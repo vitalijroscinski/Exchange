@@ -13,6 +13,8 @@ namespace Exchange.Services.ExchangeServices.FileSource
             _rateService = rateService;
         }
 
+        public string ExchangeRatesSource => "File";
+
         public async Task<decimal> CalculateExchangeAmount(ExchangeContract contract)
         {
             var rates = await _rateService.GetRatesAsync();

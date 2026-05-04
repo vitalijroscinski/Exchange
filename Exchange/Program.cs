@@ -1,4 +1,5 @@
-﻿using Exchange.Models;
+﻿using Exchange.Interfaces;
+using Exchange.Models;
 using Exchange.Services;
 using Exchange.Services.ExchangeServices.FileSource;
 using Exchange.Services.ExchangeServices.NetworkSource;
@@ -24,8 +25,8 @@ namespace Exchange
             //Dependency injection
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<MainService>()
-                .AddScoped<ExchangeServiceFile>()
-                .AddScoped<ExchangeServiceNetwork>()
+                .AddScoped<IExchangeService, ExchangeServiceFile>()
+                .AddScoped<IExchangeService, ExchangeServiceNetwork>()
                 .AddScoped<RateService>()
                 .AddSingleton<GlobalSettings>()
                 .AddSingleton(appSettings)
