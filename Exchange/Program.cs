@@ -26,7 +26,7 @@ namespace Exchange
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<MainService>()
                 .AddScoped<IExchangeService, NetworkSourceExchangeService>()
-                .AddScoped<IExchangeService, NetworkSourceExchangeService>()
+                .AddScoped<IExchangeService, FileSourceExchangeService>()
                 .AddScoped<RateService>()
                 .AddSingleton<GlobalSettings>()
                 .AddSingleton(appSettings)
